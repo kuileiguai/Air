@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="base.dao.AirDataDao">
+    <!--&lt;!&ndash;分页查找airdata的数据&ndash;&gt;
+    <select id="findAllAirData" resultType="domain.AirData">
+        select * from airdata group by startDate asc limit #{skipCount} , ${pageSize}
+    </select>
+    &lt;!&ndash;查询数据返回List<AirDate>&ndash;&gt;
+    <select id="getAirDataList" resultType="domain.AirData">/*  指定日期*/
+        select * from airdata limit #{count}
+    </select>
+
+    <select id="getAirDataList3" resultType="domain.AirData">/*  指定日期*/
+        select * from airdata group by startDate asc limit #{skipCount} , ${pageSize}
+    </select>
+
+
+    &lt;!&ndash;获取datamonth 的数据&ndash;&gt;
+    <select id="getDataMonthListLine" resultType="domain.AirData">/*  指定日期*/
+        select * from data_month group by startDate asc limit #{skipCount} , ${pageSize}
+    </select>
+    <select id="getDataMonthListLineTotal" resultType="int">
+        select count(*) from data_month
+    </select>-->
+
+<!--  ================================================================      -->
+
+    <select id="getListByDate" resultType="base.domain.AirData">
+ select id,startDate,pm2_5,pm10,co,no2,o3,so2 FROM (select * from air_data where DATE_FORMAT(startDate,'%Y-%m-%d %H') &lt;= DATE_FORMAT(NOW(),'%Y-%m-%d %H')  ORDER BY startDate desc limit 24) as b ORDER BY b.startDate limit 24
+    </select>
+<!--select id,startDate,pm2_5,pm10,co,no2,o3,so2 from air_data where startDate like #{format} "%"-->
+    <select id="getRealtimeList" resultType="base.domain.AirData">
+        select id,startDate,pm2_5,pm10,co,no2,o3,so2 from realtime_air_data order by startDate desc limit 10
+--         select id,startDate,pm2_5,pm10,co,no2,o3,so2 from realtime_air_data where DATE_FORMAT(startDate,'%Y-%m-%d %H') &lt;= DATE_FORMAT(NOW(),'%Y-%m-%d %H')  ORDER BY startDate desc limit 10
+    </select>
+
+    <select id="getRealtimeMapData" resultType="base.Vo.MapVo">
+--         select
+--         a.id,
+--         a.startDate,
+--         a.pm2_5,
+--         a.pm10,
+--         a.co,
+--         a.no2,
+--         a.o3,
+--         a.so2,
+--         b.deviceId,
+--         b.mapname,
+--         b.longitude,
+--         b.atitude
+--         from realtime_air_data a join map b on a.id=b.id and a.startDate order by a.startDate desc limit 1
+
+select
+        a.id,
+        startDate,
+        pm2_5,
+        pm10,
+        co,
+        no2,
+        o3,
+        so2,
+        deviceId,
+        mapname,
+        longitude,
+        atitude
+from realtime_air_data a,map where
+DATE_FORMAT(startDate,'%Y-%m-%d %H')=DATE_FORMAT(NOW(),'%Y-%m-%d %H')
+    </select>
+
+    <!--单独查询 realtime_air_data-->
+    <select id="getAverageHoursData" resultType="base.domain.AirData">
+select
+        a.id,
+        startDate,
+        pm2_5,
+        pm10,
+        co,
+        no2,
+        o3,
+        so2,
+        deviceId,
+        mapname,
+        longitude,
+        atitude
+        from realtime_air_data a
+        join
+        map
+        on a.startDate like #{dateTime} "%"
+
+    </select>
+
+
+</mapper>
+
+

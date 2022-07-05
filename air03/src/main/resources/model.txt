@@ -1,0 +1,84 @@
+进去实现类：ctrl+T
+
+//前端ajax
+	$.ajax({
+	    url:"user/register.do",
+		data:{
+			"qqNo":qqNo
+		},
+		type:"post",
+		dataType:"json",
+		success:function(data){
+			if(data.success){
+				成功
+			}else{
+				失败
+			}
+		}
+	})
+
+//时间和日期
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+String startdate = sdf.format(new Date());
+
+//Controller控制器
+	   @RequestMapping(value="/subComms.do",method=RequestMethod.POST)
+	    @ResponseBody
+	    public Map<String,Object> 方法名(参数){
+	        if (参数!=null) {
+	            HashMap<String,Object> m = new HashMap<>();
+	            m.put("参数",参数);
+	            Map<String,Object> mapData =XXXXService.方法名 (m);
+	            if((boolean)mapData.get("success")){
+			        成功
+	            }else{
+			        失败
+		        }
+	        }
+        }
+        //第二种方式的controller
+         @RequestMapping("/getO3.do")
+            @ResponseBody
+            //获取O3的数据
+            public Map<String,Object> getO3(Integer time){
+                Map<String,Object> param = new HashMap<>();
+                if(time!=null){
+                    param.put("time",time);
+                    Map<String,Object> mapData = airService.getO3(param);
+                    return mapData;
+                }
+                param.put("success",false);
+                return param;
+            }
+
+//Service业务层
+     @Override
+     public Map<String, Object> subComms(HashMap<String, Object> m) {
+         HashMap<String,Object> mapData = new HashMap<>();
+         boolean flag = false;
+         int count = blogsDao.subComms(m);
+         if(count>0){
+             flag=true;
+             mapData.put("success",flag);
+             return mapData;
+         }
+         mapData.put("success",flag);
+         mapData.put("msg","添加评论不成功");
+         return mapData;
+     }
+
+2、日期类
+	2.1、获取当前时间
+		Date d = new Date();
+	2.2、日期格式化：Date -->String
+		yyyy-MM-dd HH:mm:ss SSS
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+		String s = sdf.format(new Date);
+		System.out.println(s);
+	2.3、String-->Date
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+		Date d = sdf.parse("2008-08-08 08:08:08 008");
+		System.out.println(d);	//d.toString
+	2.4、获取毫秒数
+		long begin = System.currentTimeMillis();
+

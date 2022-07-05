@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <!--试图解析器-->
+    <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>-->
+    <!--声明@Controll注解-->
+    <context:component-scan base-package="base.controller"/>
+    <!--声明service的注解@service所在包名位置-->
+    <context:component-scan base-package="base.service.Impl"/>
+    <mvc:annotation-driven/>
+</beans>

@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Arise Admin Panel" />
+		<meta name="keywords" content="Admin, Dashboard, Bootstrap3, Sass, transform, CSS3, HTML5, Web design, UI Design, Responsive Dashboard, Responsive Admin, Admin Theme, Best Admin UI, Bootstrap Theme, Themeforest, Bootstrap, C3 Graphs, D3 Graphs, NVD3 Graphs, Admin Skin, Black Admin Dashboard, Grey Admin Dashboard, Dark Admin Dashboard, Simple Admin Dashboard, Simple Admin Theme, Simple Bootstrap Dashboard " />
+		<meta name="author" content="Ramji" />
+		<link rel="shortcut icon" href="img/fav.png">
+		<title>C3 Graphs - Arise Admin Panel - shared on themelock.com</title>
+		
+		<!-- Bootstrap CSS -->
+		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
+
+		<!-- Main CSS -->
+		<link href="css/main.css" rel="stylesheet" media="screen" />
+
+		<!-- Ion Icons -->
+		<link href="fonts/icomoon/icomoon.css" rel="stylesheet" />
+
+		<!-- C3 CSS -->
+		<link href="css/c3/c3.css" rel="stylesheet" />
+
+		<!-- HTML5 shiv and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="js/html5shiv.js"></script>
+			<script src="js/respond.min.js"></script>
+		<![endif]-->
+
+	</head>
+
+	<body>
+
+		<!-- Header starts -->
+		<header>
+			<!-- Logo starts -->
+			<!-- <a href="index.html" class="logo">
+				<img src="img/logo.png" alt="Arise Admin Dashboard Logo" />
+			</a> -->
+			<!-- Logo ends -->
+			<div class="custom-search hidden-sm hidden-xs">
+				<input type="text" class="search-query" placeholder="Search here ...">
+				<i class="icon-search3"></i>
+			</div>
+		</header>
+		<!-- Header ends -->
+
+		<!-- Left sidebar start -->
+		<div class="vertical-nav vertical-nav-sm">
+
+			<!-- Collapse menu starts -->
+			<button class="collapse-menu">
+				<i class="icon-menu2"></i>
+			</button>
+			<!-- Collapse menu ends -->
+
+			<!-- Current user starts -->
+			<div class="user-details clearfix">
+				<a href="javascript:void(0)" class="user-img">
+					<img src="img/logo.png" alt="logo Info">
+					<span class="likes-info">氣</span>
+				</a>
+				<h5 class="user-name">大气环境监测系统</h5>
+			</div>
+			<!-- Current user ends -->
+
+			<!-- Sidebar menu starts -->
+			<ul class="menu clearfix">
+				<li>
+					<a href="index.html">
+						<i class="icon-air-play"></i>
+						<span class="menu-item">首页</span>
+					</a>
+				</li>
+				<li>
+					<a href="./c3-graphs.html">
+						<i class="icon-calendar-alt-stroke"></i>
+						<span class="menu-item">历史记录</span>
+						<span class="down-arrow"></span>
+					</a>
+				</li>
+				<li>
+					<a href="./c3-map.html">
+						<i class="icon-map4"></i>
+						<span class="menu-item">实时定位</span>
+						<span class="down-arrow"></span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)">
+						<i class="icon-cloud-sun"></i>
+						<span class="menu-item">实时监测</span>
+						<span class="down-arrow"></span>
+					</a>
+				</li>
+			</ul>
+			<!-- Sidebar menu ends -->
+		</div>
+		<!-- Left sidebar end -->
+
+		<!-- Dashboard Wrapper Start -->
+		<div class="dashboard-wrapper">
+
+			<!-- Container fluid Starts -->
+			<div class="container-fluid">
+				
+				
+				<!-- ------------------------------------------ -->
+				
+				
+
+<script type="text/javascript" src="lib/echarts.min.js"></script>
+<script type="text/javascript" src="lib/dark.js"></script>
+
+<script type="text/javascript" src="lib/jquery-3.5.1.min.js"></script>
+		<script type="text/javascript">
+			$(function(){
+				// 初始化数据，方便打开的时候先快速展示
+				var dom1 = document.getElementById("echart1");
+				var dom2 = document.getElementById("echart2");
+				var dom3 = document.getElementById("echart3");
+				var dom4 = document.getElementById("echart4");
+				// var dom5 = document.getElementById("echart5");
+				// var dom6 = document.getElementById("echart6");
+				
+				var myChart1= echarts.init(dom1,'dark');
+				var myChart2= echarts.init(dom2,'dark');
+				var myChart3= echarts.init(dom3,'dark');
+				var myChart4= echarts.init(dom4,'dark');
+				// var myChart5= echarts.init(dom5,'dark');
+				// var myChart6= echarts.init(dom6,'dark');
+
+
+				// 定时器，2s 显示依次数据
+				setInterval(function () {
+					//初始化完以后调用ajax获取数据
+
+					$.ajax({
+						url:"base/getRealtimeList.do",
+						// data:{
+						// },
+						type:"get",
+						dataType:"json",
+						success:function(data){
+							//某个时间段落的数据
+							// 考虑如果不满足一天怎么办，没事就刚好到那个时刻
+							// 期待拿到的数据：ydate，length长度，显示的时间段，布尔值
+							if(data.success){
+								//O3,PM2.5,PM10 格式：[["2021-08-01",0],...]
+								InitEchart1(myChart1,data.timestrList,data.O3List,data.PM2_5List,data.PM10List)
+								//SO2,NO2  [time] [data]
+								InitEchart2(myChart2,data.timestrList,data.so2List,data.no2List)
+								//CO [time] [data]
+								InitEchart3(myChart3,data.timestrList,data.coList)
+							}else{
+								console.log("未知原因获取无法获取数据")
+								// var initData=  [["2021-08-01",0],
+								// 	["2021-08-01",0],
+								// 	["2021-08-01",0],
+								// 	["2021-08-01",0],
+								// 	["2021-08-01",0],
+								// 	["2021-08-01",0],
+								// 	["2021-08-01",0],
+								// 	["2021-08-01",0],
+								// 	["2021-08-01",0]];
+								var xdata=[' ', ' ', ' ', ' ', ' ', ' ', ' ']
+								var ydata1=[0, 0,0, 0, 0, 0, 0]
+								var ydata2=[0, 0,0, 0, 0, 0, 0]
+								var ydata3=[0, 0,0, 0, 0, 0, 0]
+								InitEchart1(myChart1,xdata,ydata1,ydata2,ydata3)
+								InitEchart2(myChart2,xdata,ydata1,ydata2)
+								InitEchart3(myChart3,xdata,ydata1)
+							}
+						}
+					})
+
+
+					//实时监测AQI的值，并显示重要污染物
+					$.ajax({
+						url:"base/getRealtimeAqiLastTen.do",
+						// data:{
+						// 	// 参数是时间
+						// 	"now":date.getTime()+""
+						// },
+						type:"get",
+						dataType:"json",
+						success:function(data){
+							//某个时间段落的数据
+							// 考虑如果不满足一天怎么办，没事就刚好到那个时刻
+							// 期待拿到的数据：ydate，length长度，显示的时间段，布尔值
+
+							//遍历aqiList  name 和aqi属性变成数组
+							var aqiArray=[]
+							var first_pollutionArray=[]
+							for(var i=0;i<data.aqiList.length;i++){
+								aqiArray[i]=data.aqiList[i].aqi
+								first_pollutionArray[i]=data.aqiList[i].name
+							}
+							if(data.success){
+
+
+								InitEchartAqi(myChart4,data.startDateList,aqiArray,first_pollutionArray)
+							}else{
+								console.log("未知原因获取无法获取数据")
+							}
+						}
+					})
+				}, 1000);//10*1000
+
+
+			})
+
+
+
+
+
+
+			// 传入echart对象和对应的坐标轴数据，x坐标轴可以定义一个常量，毕竟单位不一样
+			/* 这里的mode作为一个参数 6项指标的值组成一个数组
+			 
+			 比如：
+							["PM10","PM2_5"]
+							["NO2","SO2","O3"]
+							["CO"]
+							我们遍历这个数组获取里面的str，进而在echart显示多少条曲线
+							这里是实时获取后台数据，获取10条数据，显示15条数据，在echart图的右边留出一点空位显示标准
+							每张图的标准不同，也是通过遍历来确定是哪一个标准
+				理想的代码和现实的代码，只能简单粗暴了！！
+			 */
+			
+			
+			// 这个函数用于PM10 PM2.5 O3的数据显示
+			function InitEchart1(myChart,timestrList,data1,data2,data3) {
+
+				/*
+		 *	GradeA表示浓度限值是一级
+		 *	GradeB表示浓度限值是二级
+		 *	so2 no2 o3 pm2.5 pm10 nox的单位是ug/m^3 
+		 *	co 单位是mg/m^3
+		 */
+				/* 每条标准对应不同的线 */
+				// 单日每小时平均
+				var O3_GradeA = 160;//O3每日8小时平均最大不超过100
+				var O3_GradeB = 200;
+				// 24小时平均
+				var PM2_5GradeA = 35;
+				var PM2_5GradeB = 75;
+				var PM10GradeA = 50;
+				var PM10GradeB = 150;
+				var app = {};
+				var option;
+				//换掉的部分
+				/*option = {
+				    title: {
+				        right: '5%',
+				        text: '参照 环境空气质量标准(GB3095 2012)',
+				        subtext: ' 一级标准 PM10:  '+PM10GradeA+ '     PM2.5:  '+PM2_5GradeA+'     O3:  '+O3_GradeA+
+								'\n 二级标准 PM10:  '+PM10GradeB+'   PM2.5:  '+PM2_5GradeB+'     O3:  '+O3_GradeB
+				    },
+					grid: {
+				             top:-5,
+				             left: 15,
+				             right: 50,
+				             bottom: 50
+				    },
+				    legend: {
+				        top: 'bottom',
+				        data: ['意向']
+				    },
+				    tooltip: {
+						trigger: 'axis',
+				        position: function (pt) {
+				            return [pt[0], 100];
+				        }
+				    },
+				    xAxis: {   //将x的值显示为时间轴
+							type: 'time',
+				        // boundaryGap: [0, 0],
+				        axisPointer: {
+				            value: data1[1][1], //指针默认值？？？
+				            snap: true,
+				            lineStyle: {
+				                color: '#7581BD',
+				                width: 2
+				            },
+				            label: {
+				                show: true,
+				                formatter: function (params) {
+				                    return echarts.format.formatTime('yyyy-MM-dd hh:mm:ss', params.value);
+				                },
+				                backgroundColor: '#7581BD'
+				            },
+				            handle: {
+				                show: true,
+				                color: '#7581BD'
+				            }
+				        },
+				        splitLine: {
+				            show: false
+				        }
+				    },
+				    yAxis: {
+				        type: 'value',
+				        axisTick: {
+				            inside: true
+				        },
+				        // splitLine: {
+				        //     show: false
+				        // },
+				        axisLabel: {
+				            inside: true,
+				            formatter: '{value}\n'
+				        },
+				        z: 15,//10
+				    },
+				    dataZoom: [{
+				        type: 'inside',
+				        throttle: 50
+				    }],
+				    series: [
+						{
+							name: 'O3',
+							type: 'line',
+							smooth: true,
+							symbol: 'circle',
+							symbolSize: 10,
+							sampling: 'average',
+							itemStyle: {
+								color: '#55ff00'
+							},
+							areaStyle: {
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+									offset: 0,
+									color: 'rgba(0, 170, 127, 0.8)'
+								}, {
+									offset: 1,
+									color: 'rgba(0, 85, 0, 0.3)'
+								}])
+							},
+							data: data1
+						},
+				        {
+				            name: 'PM2.5',
+				            type: 'line',
+				            smooth: true,
+				            symbol: 'circle',
+				            symbolSize: 10,
+				            sampling: 'average',
+				            itemStyle: {
+				                color: '#0770FF'
+				            },
+
+				            areaStyle: {
+				                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+				                    offset: 0,
+				                    color: 'rgba(58,77,233,0.8)'
+				                }, {
+				                    offset: 1,
+				                    color: 'rgba(58,77,233,0.3)'
+				                }])
+				            },
+				            data: data2
+				        },
+						{
+						    name: 'PM10',
+						    type: 'line',
+						    smooth: true,
+						    symbol: 'circle',
+						    symbolSize: 10,
+						    sampling: 'average',
+						    itemStyle: {
+						        color: '#F2597F'
+						    },
+						    areaStyle: {
+						        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+						            offset: 0,
+						            color: '#ff007f'
+						        }, {
+						            offset: 1,
+						            color: 'rgba(213,72,120,0.3)'
+						        }])
+						    },
+						    data: data3
+						}
+
+				    ]
+				};*/
+
+				option = {
+					color: ['#80FFA5', '#00DDFF', '#ff0087', '#FFBF00'],
+					title: {
+						right: '5%',
+						text: '参照 环境空气质量标准(GB3095 2012)',
+						subtext: ' 一级标准 PM10:  '+PM10GradeA+ '     PM2.5:  '+PM2_5GradeA+'     O3:  '+O3_GradeA+
+								'\n 二级标准 PM10:  '+PM10GradeB+'   PM2.5:  '+PM2_5GradeB+'     O3:  '+O3_GradeB
+					},
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							type: 'cross',
+							label: {
+								backgroundColor: '#000000'
+							}
+						}
+					},
+					legend: {
+						data: ['O3', 'PM2_5', 'PM10']
+					},
+					toolbox: {
+						feature: {
+							saveAsImage: {}
+						}
+					},
+					grid: {
+						left: '3%',
+						right: '4%',
+						bottom: '3%',
+						containLabel: true
+					},
+					xAxis: [
+						{
+							type: 'category',
+							boundaryGap: false,
+							splitLine: {show: false},
+							data: timestrList
+						}
+					],
+					yAxis: [
+						{
+							type: 'value',
+							splitLine: {show: false}
+						}
+					],
+					series: [
+						{
+							name: 'O3',
+							type: 'line',
+							smooth: true,
+
+							areaStyle: {
+								opacity: 0.3,
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+									{
+										offset: 0,
+										color: 'rgba(128, 255, 165)'
+									},
+									{
+										offset: 1,
+										color: 'rgba(1, 191, 236)'
+									}
+								])
+							},
+							emphasis: {
+								focus: 'series'
+							},
+							data: data1
+						},
+						{
+							name: 'PM2_5',
+							type: 'line',
+							smooth: true,
+
+							areaStyle: {
+								opacity: 0.3,
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+									{
+										offset: 0,
+										color: 'rgba(0, 221, 255)'
+									},
+									{
+										offset: 1,
+										color: 'rgba(77, 119, 255)'
+									}
+								])
+							},
+							emphasis: {
+								focus: 'series'
+							},
+							data: data2
+						},
+						{
+							name: 'PM10',
+							type: 'line',
+							smooth: true,
+
+							areaStyle: {
+								opacity: 0.3,
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+									{
+										offset: 0,
+										color: 'rgb(255,63,85)'
+									},
+									{
+										offset: 1,
+										color: 'rgba(255,58,98,0.75)'
+									}
+								])
+							},
+							emphasis: {
+								focus: 'series'
+							},
+							data: data3
+						}
+					]
+				};
+
+				/*option = {
+					title: {
+						right: '5%',
+						text: '参照 环境空气质量标准(GB3095 2012)',
+						subtext: ' 一级标准 PM10:  ' + PM10GradeA + '     PM2.5:  ' + PM2_5GradeA + '     O3:  ' + O3_GradeA +
+								'\n 二级标准 PM10:  ' + PM10GradeB + '   PM2.5:  ' + PM2_5GradeB + '     O3:  ' + O3_GradeB
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					legend: {
+						data: ['O3', 'PM2_5', 'PM10']
+					},
+					grid: {
+						left: '3%',
+						right: '4%',
+						bottom: '3%',
+						containLabel: true
+					},
+					toolbox: {
+						feature: {
+							saveAsImage: {}
+						}
+					},
+					xAxis: {
+						type: 'category',
+						boundaryGap: false,
+						data: timestrList
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [
+						{
+							name: 'O3',
+							type: 'line',
+							data: data1
+						},
+						{
+							name: 'PM2_5',
+							type: 'line',
+							data: data2
+						},
+						{
+							name: 'PM10',
+							type: 'line',
+							data: data3
+						}
+					]
+				};*/
+				if (option && typeof option === 'object') {
+					myChart.setOption(option);
+				}
+			}
+
+			// 	option = {
+			// 		title: {
+			// 			right: '5%',
+			// 			text: '参照 环境空气质量标准(GB3095 2012)',
+			// 			subtext: ' 一级标准 PM10:  '+PM10GradeA+ '     PM2.5:  '+PM2_5GradeA+'     O3:  '+O3_GradeA+
+			// 					'\n 二级标准 PM10:  '+PM10GradeB+'   PM2.5:  '+PM2_5GradeB+'     O3:  '+O3_GradeB
+			// 		},
+			// 		grid: {
+			// 			top:-5,
+			// 			left: 15,
+			// 			right: 50,
+			// 			bottom: 50
+			// 		},
+			// 		xAxis: {
+			// 			type: 'time',
+			// 			data:timestrList,
+			// 			splitLine: {
+			// 				show: false
+			// 			}
+			// 		},
+			// 		yAxis: {
+			// 			type: 'value',
+			// 			splitLine: {
+			// 				show: false
+			// 			}
+			// 		},
+			// 		series: [
+			// 			{
+			// 				data: data1,
+			// 				type: 'line',
+			// 				smooth: true
+			// 			},
+			// 			{
+			// 				data: data2,
+			// 				type: 'line',
+			// 				smooth: true
+			// 			},
+			// 			{
+			// 				data: data3,
+			// 				type: 'line',
+			// 				smooth: true
+			// 			},
+			// 		]
+			// 	};
+			// 	if (option && typeof option === 'object') {
+			// 	    myChart.setOption(option);
+			// 	}
+			// }
+			
+			function InitEchart2(myChart,xdata,ydata1,ydata2){
+				
+				var SO2_GradeA=150;
+				var SO2_GradeB=500;
+				var NO2_GradeA=200;
+				// var NO2_GradeB=200;//氮氧化物的两个值都是相同的
+				// var CO_GradeA=10;
+				// var CO_GradeB=10;
+				// var O3_GradeA=160;//O3每日8小时平均最大不超过100
+				// var O3_GradeB=200;
+				//
+				// var NOX_GradeA=250;
+				// var NOX_GradeB=250;
+				//
+				var app = {};
+				var option;
+
+				option = {
+					title: {
+					    right: '5%',
+					    text: '参照 环境空气质量标准(GB3095 2012)',
+					    subtext: ' 一级标准 SO2:  '+SO2_GradeA+ '     NO2:  '+NO2_GradeA+
+								'\n 二级标准 SO2:  '+SO2_GradeB+'   NO2:  '+NO2_GradeA
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					legend: {
+						data: ['SO2 二氧化硫', 'NO2 二氧化氮']
+					},
+					grid: {
+						top:10,
+						left: '3%',
+						right: '4%',
+						bottom: '3%',
+						containLabel: true
+					},
+					toolbox: {
+						feature: {
+							saveAsImage: {}
+						}
+					},
+					xAxis: {
+						type: 'category',
+						boundaryGap: false,
+						data: xdata,
+						splitLine: {show: false}
+					},
+					yAxis: {
+						type: 'value',
+						splitLine: {show: false}
+					},
+					series: [
+						{
+							name: 'SO2',
+							type: 'line',
+							stack: '总量',
+							itemStyle: {
+							    color: '#F2597F'
+							},
+							areaStyle: {
+							    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+							        offset: 0,
+							        color: '#483e43'
+							    }, {
+							        offset: 1,
+							        color: '#483e43'
+							    }])
+							},
+							data: ydata1
+						},
+						{
+							name: 'NO2',
+							type: 'line',
+							stack: '总量',
+							itemStyle: {
+							    color: '#6fb4ce'
+							},
+							areaStyle: {
+							    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+							        offset: 0,
+							        color: '#50565f'
+							    }, {
+							        offset: 1,
+							        color: '#50565f'
+							    }])
+							},
+							data: ydata2
+						}
+					]
+				};
+			
+				if (option && typeof option === 'object') {
+				    myChart.setOption(option);
+				}
+			}
+			
+			function InitEchart3(myChart,xdata,ydata){
+				var CO_GradeA=10;
+				var CO_GradeB=4;
+				
+				var NOX_GradeA=250;
+				var NOX_GradeB=250;
+				
+				var app = {};
+				var option;
+			
+				option = {
+					title: {
+					    right: '5%',
+					    text: '参照 环境空气质量标准(GB3095 2012)',
+					    subtext: ' 一小时平均 CO:  '+CO_GradeA+ 
+								'\n 24小时平均 CO:  '+CO_GradeB
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					legend: {
+						data: ['CO 一氧化碳']
+					},
+					grid: {
+						top:10,
+						left: '3%',
+						right: '4%',
+						bottom: '3%',
+						containLabel: true
+					},
+					toolbox: {
+						feature: {
+							saveAsImage: {}
+						}
+					},
+					xAxis: {
+						type: 'category',
+						boundaryGap: false,
+						data: xdata,
+						splitLine: {show: false}
+					},
+					yAxis: {
+						type: 'value',
+						splitLine: {show: false}
+						
+					},
+					series: [
+						{
+							name: 'CO',
+							type: 'line',
+							stack: '总量',
+							itemStyle: {
+							    color: '#F2597F'
+							},
+							areaStyle: {
+							    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+							        offset: 0,
+							        color: '#483e43'
+							    }, {
+							        offset: 1,
+							        color: '#483e43'
+							    }])
+							},
+							data: ydata
+						}
+					]
+				};
+			
+				if (option && typeof option === 'object') {
+				    myChart.setOption(option);
+				}
+			}
+
+
+			function InitEchartAqi(myChart,xData,yData,first_pollutionArray){
+				//	判断是否超标
+				var app = {};
+				var option;
+				myChart.setOption(option = {
+					title: {
+						right: -200,
+						text: 'AQI 指数等级分布',
+						subtext:"400~500 严重污染\n"+"300~400 重度污染\n"+"200~300 中度污染\n"+
+								"100~200 轻度污染\n"+" 50~100      良\n" +"  0~50      优",
+						subtextStyle:{ align:'right'},
+						textAlign:'right'
+					},
+					tooltip: {
+						trigger: 'axis',
+						show: true, // 必须引入
+						axisPointer: {
+							type: 'line',
+							label:{formatter: function (params) {  //实时显示首要污染物算法
+								var str=""
+								for(var i=0;i<xData.length;i++){
+									if(xData[i]==params.value){
+										str=first_pollutionArray[i]
+										break
+									}
+								}
+									return str
+							}}
+						},
+					},
+					grid: {
+						top:'5%',
+						left: '5%',
+						right: '20%',
+						bottom: '13%'
+					},
+					xAxis: {
+						data: xData,
+						splitLine: {show: false}
+					},
+					yAxis: {splitLine: {show: false}},
+					toolbox: {
+						right: 0,
+
+						feature: {
+							dataZoom: {
+								yAxisIndex: 'none'
+							},
+						}
+					},
+					visualMap: {
+						top: 50,
+						right: 10,
+						pieces: [{
+							gt: 0,
+							lte: 50,
+							color: '#93CE07'
+						}, {
+							gt: 50,
+							lte: 100,
+							color: '#FBDB0F'
+						}, {
+							gt: 100,
+							lte: 150,
+							color: '#FC7D02'
+						}, {
+							gt: 150,
+							lte: 200,
+							color: '#FD0100'
+						}, {
+							gt: 200,
+							lte: 300,
+							color: '#AA069F'
+						}, {
+							gt: 300,
+							color: '#AC3B2A'
+						}],
+						outOfRange: {
+							color: '#999'
+						}
+					},
+					series: {
+						name: 'AQI ',
+						type: 'line',
+						data: yData,
+						markLine: {
+							silent: true,
+							lineStyle: {
+								color: '#95a0b1'
+							},
+							data: [{
+								yAxis: 50
+							}, {
+								yAxis: 100
+							}, {
+								yAxis: 150
+							}, {
+								yAxis: 200
+							}, {
+								yAxis: 300
+							}]
+						}
+					}
+				});
+				if (option && typeof option === 'object') {
+					myChart.setOption(option);
+				}
+			}
+
+		</script>
+
+				<!-- Top Bar Starts -->
+				<div class="top-bar clearfix">
+					<div class="row gutter">
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<div class="page-title">
+								<h3>实时监测</h3>
+								<p> <!-- <a href="index.html">Home</a> --></p>
+							</div>
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<ul class="right-stats" id="mini-nav-right">
+								<li>
+									<a href="./c3-graphs.html" class="btn btn-danger"><i class="icon-hour-glass"></i>for a day</a>
+								</li>
+								<li>
+									<a href="javascript:void(0)" class="btn btn-success">
+										<i class="icon-time-slot"></i>for realtime</a>
+								</li>
+								<li>
+									<a href="./c3-map.html" class="btn btn-info"><i class="icon-map3"></i> Map</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!-- Top Bar Ends -->
+
+				<!-- Row starts -->
+				<div class="row gutter">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="panel height2" >
+							<div class="panel-heading">
+								<h4 class="panel-title">实时监测AQI指数 / 首要污染物 </h4>
+							</div>
+							<div class="panel-body">
+								<div id="echart4" class="chart-height1"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Row ends -->
+
+
+
+
+
+
+
+
+
+				<!-- Row starts -->
+				<div class="row gutter">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="panel height2" >
+							<div class="panel-heading">
+								<h4 class="panel-title">O3臭氧 PM2.5 PM10 细微颗粒物(单位ug/m3)</h4>
+							</div>
+							<div class="panel-body">
+								<div id="echart1" class="chart-height1" ></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Row ends -->
+				
+				<!-- Row starts -->
+				<div class="row gutter">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="panel height2" >
+							<div class="panel-heading">
+								<h4 class="panel-title">SO2二氧化硫 NO2二氧化氮(单位ug/m3)</h4>
+							</div>
+							<div class="panel-body">
+								<div id="echart2" class="chart-height1" ></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Row ends -->
+				
+				
+				<div class="row gutter">
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<div class="panel height2">
+							<div class="panel-heading">
+								<h4 class="panel-title">CO 一氧化碳(单位mg/m3)</h4>
+							</div>
+							<div class="panel-body">
+								<!-- <div id="splineGraph" class="chart-height1"></div> -->
+								<div id="echart3" class="chart-height1"></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<div class="panel height2">
+							<div class="panel-heading">
+								<h4 class="panel-title">-</h4>
+							</div>
+							<div class="panel-body">
+								<!-- <div id="barAreaGraph" class="chart-height1"></div> -->
+								<div id="echart6" class="chart-height1"></div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+<!-- ----======================================================================== -->
+
+
+				<!-- Row Starts -->
+				<div class="row gutter">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="panel panel-blue">
+							<div class="panel-heading">
+								<h4>空气质量小知识</h4>
+							</div>
+							<div class="panel-body">
+								<div class="table-responsive">
+									<table id="basicExample" class="table table-striped table-condensed table-bordered no-margin">
+										<thead>
+										 <tr>
+										     <th width="180">空气质量指数</th>
+										     <th width="180">空气质量状况</th>
+										     <th width="250">对健康影响情况</th>
+										     <th>建议采取的措施</th>
+										 </tr>
+										</thead>
+										<!-- <tfoot>
+										  <tr>
+												<th>Name</th>
+												<th>Position</th>
+												<th>Office</th>
+												<th>Age</th>
+												<th>Start date</th>
+												<th>Salary</th>
+										  </tr> -->
+<!--										</tfoot>-->
+										<tbody>
+										    <tr>
+										        <td>0-50</td>
+										        <td><span>优</span></td>
+										        <td class="ari-td-st">空气质量令人满意，基本无空气污染，对健康没有危害。</td>
+										        <td class="ari-td-st">各类人群可多参加户外活动，多呼吸一下清新的空气。</td>
+										    </tr>
+										    <tr>
+										        <td>51-100</td>
+										        <td><span >良</span></td>
+										        <td class="ari-td-st">除少数对某些污染物特别敏感的人群外，不会对人体健康产生危害。</td>
+										        <td class="ari-td-st">除少数对某些污染物特别容易过敏的人群外，其他人群可以正常进行室外活动。</td>
+										    </tr>
+										    <tr>
+										        <td>101-150</td>
+										        <td><span>轻度</span></td>
+										        <td class="ari-td-st">敏感人群症状会有轻度加剧，对健康人群没有明显影响。</td>
+										        <td class="ari-td-st">儿童、老年人及心脏病、呼吸系统疾病患者应尽量减少体力消耗大的户外活动。</td>
+										    </tr>
+										    <tr>
+										        <td>151-200</td>
+										        <td><span>中度</span></td>
+										        <td class="ari-td-st">敏感人群症状进一步加剧，可能对健康人群的心脏、呼吸系统有影响。</td>
+										        <td class="ari-td-st">儿童、老年人及心脏病、呼吸系统疾病患者应尽量减少外出，停留在室内，一般人群应适量减少户外运动。</td>
+										    </tr>
+										    <tr>
+										        <td>201-300</td>
+										        <td><span>重度</span></td>
+										        <td class="ari-td-st">空气状况很差，会对每个人的健康都产生比较严重的危害。</td>
+										        <td class="ari-td-st">儿童、老年人及心脏病、肺病患者应停留在室内，停止户外运动，一般人群尽量减少户外运动。</td>
+										    </tr>
+										    <tr>
+										        <td>＞300</td>
+										        <td><span>严重</span></td>
+										        <td class="ari-td-st">空气状况极差，所有人的健康都会受到严重危害。</td>
+										        <td class="ari-td-st">儿童、老年人和病人应停留在室内，避免体力消耗，除有特殊需要的人群外，一般人群尽量不要停留在室外。</td>
+										    </tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Row Ends -->
+
+
+<!-- =================================================================== -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<!-- Row starts -->
+				<!-- <div class="row gutter">
+					<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+						<div class="panel height2">
+							<div class="panel-heading">
+								<h4 class="panel-title">CO 一氧化碳(单位 mg/m3)</h4>
+							</div>
+							<div class="panel-body">
+								<div id="pieChart" class="chart-height1"></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+						<div class="panel height2">
+							<div class="panel-heading">
+								<h4 class="panel-title">Donut Chart</h4>
+							</div>
+							<div class="panel-body">
+								<div id="donutChart" class="chart-height1"></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+						<div class="panel height2">
+							<div class="panel-heading">
+								<h4 class="panel-title">Area Spline Graph</h4>
+							</div>
+							<div class="panel-body">
+								<div id="areaSplineGraph" class="chart-height1"></div>
+							</div>
+						</div>
+					</div>
+				</div> -->
+				<!-- Row ends -->
+				
+				<!-- Row starts -->
+				<!-- <div class="row gutter">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<h4>Server Requests</h4>
+							</div>
+							<div class="panel-body no-padding">
+								<div id="serverRequests" class="chart-height4"></div>
+							</div>
+						</div>
+					</div>
+				</div> -->
+				<!-- Row ends -->
+
+			</div>
+			<!-- Container fluid ends -->
+			
+		</div>
+		<!-- Dashboard Wrapper End -->
+
+		<!-- Footer Start -->
+		<footer>
+			@ 基于NB-IOT <a href="http://www.bootstrapmb.com/">的</a> 网格化大气 <span>监测系统</span>
+		</footer>
+		<!-- Footer end -->
+
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="js/jquery.js"></script>
+
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="js/bootstrap.min.js"></script>
+		
+		<!-- jquery ScrollUp JS -->
+		<script src="js/scrollup/jquery.scrollUp.js"></script>
+
+		<!-- D3 JS -->
+		<script src="js/d3/d3.v3.min.js"></script>
+
+		<!-- C3 Graphs -->
+		<script src="js/c3/c3.min.js"></script>
+		<script src="js/c3/c3.custom.js"></script>
+
+		<!-- Custom JS -->
+		<script src="js/custom.js"></script>
+	</body>
+</html>
